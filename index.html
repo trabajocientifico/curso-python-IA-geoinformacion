@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python + IA en Geoinformación · Trabajo Científico</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════
+       MODAL DE BIENVENIDA
+  ═══════════════════════════════════════════════════════ -->
+  <div id="modal-welcome" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-badge">CURSO INTENSIVO &nbsp;·&nbsp; 9 HORAS &nbsp;·&nbsp; 3 ENCUENTROS</div>
+      <h1 class="modal-title">Espacialización de la Información<br><span>con Python + IA</span></h1>
+
+      <div class="modal-code">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <pre><code><span class="c-kw">import</span> geopandas <span class="c-kw">as</span> gpd
+mapa <span class="c-op">=</span> gpd.read_file(<span class="c-str">'colombia.shp'</span>)
+mapa.plot(column<span class="c-op">=</span><span class="c-str">'poblacion'</span>, cmap<span class="c-op">=</span><span class="c-str">'viridis'</span>)
+<span class="c-cmt"># De shapefile a mapa en 3 líneas</span></code></pre>
+      </div>
+
+      <p class="modal-instructor">
+        <strong>Instructor:</strong> Oscar Iván Vargas Pineda, PhD(c)<br>
+        <span>Data Scientist · Earth Innovation Institute · Fundador de Trabajo Científico</span>
+      </p>
+
+      <div class="modal-form">
+        <label for="input-name">Nombre completo</label>
+        <input type="text" id="input-name" placeholder="Ej: María González"
+               autocomplete="name" maxlength="60" />
+
+        <label for="input-password">Clave de acceso</label>
+        <input type="password" id="input-password" placeholder="Clave del curso" />
+        <p id="password-error" class="form-error hidden">Clave incorrecta. Verifique e intente nuevamente.</p>
+
+        <button id="btn-start" class="btn-primary btn-large">Ingresar al curso &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       APLICACIÓN PRINCIPAL
+  ═══════════════════════════════════════════════════════ -->
+  <div id="app" class="app-hidden">
+
+    <!-- ENCABEZADO -->
+    <header class="app-header">
+      <div class="header-left">
+        <button id="sidebar-toggle" class="btn-menu" title="Menú" aria-label="Menú">&#9776;</button>
+        <div class="header-brand">
+          <span class="brand-icon">🗺️</span>
+          <span class="brand-title">Python + IA &nbsp;·&nbsp; Geoinformación</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-progress-wrap">
+          <span id="header-progress-text">0 / 3 encuentros</span>
+          <div class="header-progress-bar">
+            <div id="header-progress-fill"></div>
+          </div>
+        </div>
+        <div class="header-user">
+          <span class="user-icon">👤</span>
+          <span id="header-username"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- LAYOUT -->
+    <div class="app-layout">
+
+      <!-- BARRA LATERAL -->
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-inner">
+          <button id="btn-go-dashboard" class="btn-dashboard-nav">⌂ Inicio del curso</button>
+          <div class="sidebar-progress">
+            <div class="sidebar-progress-label">
+              <span>Progreso</span>
+              <span id="sidebar-progress-pct">0%</span>
+            </div>
+            <div class="sidebar-progress-bar">
+              <div id="sidebar-progress-fill"></div>
+            </div>
+          </div>
+          <nav id="course-nav" class="course-nav" aria-label="Encuentros del curso">
+            <!-- Generado por JavaScript -->
+          </nav>
+        </div>
+      </aside>
+
+      <!-- CONTENIDO -->
+      <main id="main-content" class="main-content">
+
+        <!-- ─── DASHBOARD ─── -->
+        <div id="view-dashboard" class="view">
+          <div class="dashboard-header">
+            <h1>Bienvenido/a, <span id="dashboard-username"></span></h1>
+            <p class="dashboard-meta">9 horas &nbsp;·&nbsp; 3 encuentros &nbsp;·&nbsp; Curso Intensivo &nbsp;·&nbsp; Python + IA</p>
+          </div>
+
+          <div class="info-cards">
+            <div class="info-card">
+              <div class="info-card-icon">🤖</div>
+              <div>
+                <strong>Sin código previo</strong>
+                <p>No requieres experiencia en Python ni programación.</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">⚡</div>
+              <div>
+                <strong>IA como copiloto</strong>
+                <p>ChatGPT y Claude generan el código por ti desde el día 1.</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">🌍</div>
+              <div>
+                <strong>100% práctico</strong>
+                <p>Mapas y análisis reales con datos de Colombia.</p>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="section-title">Plan de estudios</h2>
+          <div id="dashboard-modules" class="encounters-list"></div>
+        </div>
+
+        <!-- ─── ENCUENTRO ─── -->
+        <div id="view-session" class="view hidden">
+          <div class="session-header">
+            <div class="session-meta-row">
+              <span id="session-module-label" class="badge-module"></span>
+              <span id="session-number-label" class="badge-session"></span>
+              <span id="badge-duration" class="badge-duration">⏱ 3 horas</span>
+            </div>
+            <h1 id="session-title"></h1>
+            <div id="session-completed-banner" class="completed-banner hidden">✓ Encuentro completado</div>
+          </div>
+
+          <div id="session-video" class="session-video"></div>
+
+          <div id="session-scripts" class="session-scripts hidden">
+            <h3>💾 Notebooks y datos del encuentro</h3>
+            <ul id="scripts-list"></ul>
+          </div>
+
+          <div id="session-content" class="session-content"></div>
+
+          <div id="session-resources" class="session-resources hidden">
+            <h3>🔗 Recursos y herramientas</h3>
+            <ul id="resources-list"></ul>
+          </div>
+
+          <div class="session-actions">
+            <button id="btn-complete-session" class="btn-primary btn-large">
+              ✓ Marcar encuentro como completado
+            </button>
+          </div>
+
+          <div class="session-nav-row">
+            <button id="btn-prev-session" class="btn-secondary">&#8592; Encuentro anterior</button>
+            <button id="btn-next-session" class="btn-secondary">Siguiente encuentro &#8594;</button>
+          </div>
+        </div>
+
+        <!-- ─── QUIZ ─── -->
+        <div id="view-quiz" class="view hidden">
+          <div class="quiz-header">
+            <span id="quiz-module-label" class="badge-module"></span>
+            <h1 id="quiz-title">Evaluación</h1>
+          </div>
+
+          <div class="quiz-step-bar">
+            <div id="step-dots" class="step-dots"></div>
+            <div class="quiz-progress-track">
+              <div id="quiz-progress-fill"></div>
+            </div>
+            <span id="quiz-step-counter" class="quiz-step-counter"></span>
+          </div>
+
+          <div id="quiz-body"></div>
+
+          <div id="quiz-actions" class="quiz-nav">
+            <button id="btn-quiz-prev" class="btn-secondary hidden">&#8592; Anterior</button>
+            <div class="quiz-nav-spacer"></div>
+            <button id="btn-quiz-next" class="btn-primary">Siguiente &#8594;</button>
+            <button id="btn-submit-quiz" class="btn-primary hidden">Enviar respuestas ✓</button>
+          </div>
+
+          <div id="quiz-results" class="quiz-results hidden">
+            <div id="result-card" class="result-card">
+              <div class="score-ring-wrap">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke-width="8" class="ring-bg"/>
+                  <circle id="score-ring-fill" cx="50" cy="50" r="40" fill="none" stroke-width="8"
+                    stroke-linecap="round" transform="rotate(-90 50 50)"/>
+                </svg>
+                <div class="score-overlay">
+                  <span id="score-text" class="score-number">0%</span>
+                </div>
+              </div>
+              <h2 id="result-title"></h2>
+              <p id="result-message"></p>
+              <div class="result-actions">
+                <button id="btn-next-module" class="btn-primary btn-large hidden">Continuar al siguiente &#8594;</button>
+                <button id="btn-retry-quiz" class="btn-secondary btn-large hidden">&#8635; Intentar nuevamente</button>
+              </div>
+            </div>
+
+            <div class="quiz-review-section">
+              <button class="btn-toggle-review" id="btn-toggle-review">Ver revisión de respuestas ▾</button>
+              <div id="quiz-review" class="hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── CERTIFICADO ─── -->
+        <div id="view-certificate" class="view hidden">
+          <div class="certificate-wrapper">
+            <div class="certificate-intro">
+              <div class="certificate-trophy">🏆</div>
+              <h1>¡Felicitaciones!</h1>
+              <p>Has completado exitosamente el curso<br>
+                <strong>Espacialización de la Información con Python + IA</strong>.
+              </p>
+            </div>
+            <canvas id="certificate-canvas" width="800" height="560"></canvas>
+            <button id="btn-download-cert" class="btn-primary btn-large">&#8659; Descargar certificado (PDF)</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="js/course-data.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

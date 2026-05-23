@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 1 — Python + IA para Geoinformación</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c1017;--bg-s:#141a24;--bg-s2:#1a2233;--bg-c:#0d1117;--a:#22d3a7;--a2:#6366f1;--a3:#f59e0b;--a4:#ef4444;--a5:#ec4899;--t:#e8edf5;--t2:#8b99b0;--t3:#5a6a80;--bdr:rgba(34,211,167,.1);--gl:rgba(20,26,36,.85);--r:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden;line-height:1.6}
+.slide{min-height:100vh;display:none;flex-direction:column;justify-content:center;padding:58px 56px 72px;position:relative;animation:fi .55s cubic-bezier(.16,1,.3,1)}
+.slide.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+.topbar{position:fixed;top:0;left:0;right:0;height:48px;background:rgba(12,16,23,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:100}
+.topbar-brand{font-family:'Fira Code',monospace;font-size:11px;color:var(--a);letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.topbar-brand .logo{width:26px;height:26px;background:linear-gradient(135deg,var(--a),var(--a2));border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:var(--bg)}
+.topbar-center{font-size:12px;color:var(--t2)}.topbar-center strong{color:var(--t)}
+.sc{font-family:'Fira Code',monospace;font-size:11px;color:var(--t3)}
+.pt{position:fixed;top:48px;left:0;right:0;height:3px;background:rgba(255,255,255,.03);z-index:101}
+.pf{height:100%;background:linear-gradient(90deg,var(--a),var(--a2),var(--a5));transition:width .4s;width:0%}
+.nc{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:100;background:var(--gl);backdrop-filter:blur(20px);border:1px solid var(--bdr);padding:7px 16px;border-radius:100px}
+.nb{width:36px;height:36px;border-radius:50%;border:1px solid var(--bdr);background:0;color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nb:hover{background:var(--a);color:var(--bg);border-color:var(--a)}.nb:disabled{opacity:.2;pointer-events:none}
+.nd{display:flex;gap:5px}.nm{width:7px;height:7px;border-radius:50%;background:var(--t3);cursor:pointer;transition:all .3s;opacity:.25}
+.nm.on{background:var(--a);opacity:1;transform:scale(1.5)}.nm:hover{opacity:.6}
+.sl{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--a);margin-bottom:12px;opacity:.8}
+.st{font-family:'Fraunces',serif;font-size:clamp(1.85rem,4.5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:16px;letter-spacing:-.5px}
+.ss{font-size:1.05rem;color:var(--t2);max-width:680px;font-weight:300;line-height:1.7;margin-bottom:30px}
+.hi{color:var(--a);font-weight:600}.hb{color:var(--a2);font-weight:600}.hy{color:var(--a3);font-weight:600}.hr{color:var(--a4);font-weight:600}.hp{color:var(--a5);font-weight:600}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:8px}
+.cb{background:var(--bg-s);border:1px solid var(--bdr);border-radius:var(--r);padding:22px 20px;transition:all .4s cubic-bezier(.16,1,.3,1);cursor:default}
+.cb:hover{transform:translateY(-3px);border-color:rgba(34,211,167,.3);box-shadow:0 6px 24px rgba(34,211,167,.06)}
+.cb .ic{font-size:1.8rem;margin-bottom:10px;display:block}.cb h3{font-size:.98rem;font-weight:600;margin-bottom:5px}.cb p{font-size:.82rem;color:var(--t2);line-height:1.6}
+.co{padding:16px 20px;border-radius:11px;margin-top:16px;font-size:.88rem;line-height:1.7}
+.co.tip{background:rgba(34,211,167,.06);border-left:3px solid var(--a);color:var(--t2)}.co.wrn{background:rgba(245,158,11,.06);border-left:3px solid var(--a3);color:var(--t2)}
+.co strong{color:var(--t)}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.tc{grid-template-columns:1fr}.slide{padding:54px 18px 72px}}
+.cp{background:var(--bg-c);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-top:12px}
+.ct{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.04)}
+.cd{display:flex;gap:5px}.cd span{width:9px;height:9px;border-radius:50%}.cd span:nth-child(1){background:#ff5f57}.cd span:nth-child(2){background:#ffbd2e}.cd span:nth-child(3){background:#28c840}
+.cf{font-family:'Fira Code',monospace;font-size:10px;color:var(--t3)}
+.rb{display:flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(34,211,167,.12);border:1px solid rgba(34,211,167,.25);border-radius:7px;color:var(--a);font-family:'Fira Code',monospace;font-size:10px;cursor:pointer;transition:all .3s}
+.rb:hover{background:var(--a);color:var(--bg)}
+.ce{padding:16px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.85;color:#c9d1d9;white-space:pre-wrap}
+.oa{border-top:1px solid rgba(255,255,255,.04);padding:12px 16px;font-family:'Fira Code',monospace;font-size:11px;color:var(--a);background:rgba(34,211,167,.03);display:none}
+.oa.vi{display:block}
+.ol{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.ck{color:#ff7b72}.cs{color:#a5d6ff}.cff{color:#d2a8ff}.cn{color:#79c0ff}.ccm{color:#8b949e;font-style:italic}.cbu{color:#ffa657}.cv{color:#ffa198}
+.sc2{background:var(--bg-s);border:1px solid var(--bdr);border-radius:var(--r);padding:22px;margin-top:12px}
+.sit{font-family:'Fira Code',monospace;font-size:10px;color:var(--a);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.sit::before{content:'';width:7px;height:7px;background:var(--a);border-radius:50%;animation:bl 2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+/* Var sim */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:800px){.vs{grid-template-columns:1fr}}
+.vf{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border:1px solid var(--bdr);border-radius:8px;margin-bottom:7px}
+.vf label{font-family:'Fira Code',monospace;font-size:11px;color:var(--a2);min-width:80px}
+.vf input,.vf select{flex:1;background:0;border:0;color:var(--t);font-family:'Fira Code',monospace;font-size:12px;outline:0}
+.vf select option{background:var(--bg-s)}
+.vm{background:var(--bg-c);border:1px solid var(--bdr);border-radius:9px;padding:16px}
+.vmt{font-family:'Fira Code',monospace;font-size:10px;color:var(--t3);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase}
+.ms{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03)}.ms:last-child{border:0}
+.ms .ad{font-family:'Fira Code',monospace;font-size:9px;color:var(--t3);width:55px}
+.ms .na{font-family:'Fira Code',monospace;font-size:11px;color:var(--a2);width:85px}
+.ms .va{font-family:'Fira Code',monospace;font-size:11px;color:var(--a);flex:1}
+.ms .tb{font-family:'Fira Code',monospace;font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(99,102,241,.15);color:var(--a2)}
+/* Type cards */
+.te{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.tcd{flex:1;min-width:140px;background:var(--bg-s);border:2px solid var(--bdr);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.tcd[data-type="int"]{--tc:var(--a2)}.tcd[data-type="float"]{--tc:var(--a)}.tcd[data-type="str"]{--tc:var(--a3)}.tcd[data-type="bool"]{--tc:var(--a4)}.tcd[data-type="list"]{--tc:var(--a5)}
+.tcd:hover,.tcd.sel{transform:translateY(-3px);border-color:var(--tc);box-shadow:0 0 20px color-mix(in srgb,var(--tc) 18%,transparent)}
+.tcd .ti{font-size:1.6rem;margin-bottom:6px}.tcd .tn{font-family:'Fira Code',monospace;font-size:13px;font-weight:600;color:var(--tc);margin-bottom:2px}.tcd .td2{font-size:.75rem;color:var(--t2)}
+.tdt{background:var(--bg-c);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-top:14px;display:none}
+.tdt.vi{display:block;animation:fi .4s}
+.tex{font-family:'Fira Code',monospace;font-size:12px;line-height:1.85;margin-bottom:8px}
+.tan{padding:11px 14px;background:rgba(34,211,167,.05);border-left:3px solid var(--a);border-radius:0 9px 9px 0;font-size:.85rem;color:var(--t2)}.tan strong{color:var(--t)}
+/* Coord */
+.cex{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}@media(max-width:800px){.cex{grid-template-columns:1fr}}
+.mm{background:var(--bg-c);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;aspect-ratio:4/3}.mm canvas{width:100%;height:100%;cursor:crosshair}
+.crd{background:var(--bg-c);border:1px solid var(--bdr);border-radius:9px;padding:14px;margin-bottom:8px}
+.crd h4{font-family:'Fira Code',monospace;font-size:10px;color:var(--t3);margin-bottom:6px}
+.crv{font-family:'Fira Code',monospace;font-size:1.3rem;font-weight:600}.crv.lat{color:var(--a)}.crv.lon{color:var(--a2)}
+.crp{background:var(--bg-c);border:1px solid var(--bdr);border-radius:9px;padding:14px;font-family:'Fira Code',monospace;font-size:11px;line-height:1.8;color:#c9d1d9}
+/* List */
+.lv{display:flex;gap:3px;flex-wrap:wrap;align-items:end}
+.lib{display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.lib .ix{font-family:'Fira Code',monospace;font-size:9px;color:var(--t3)}
+.lib .vl{padding:8px 11px;background:var(--bg-c);border:2px solid var(--bdr);border-radius:7px;font-family:'Fira Code',monospace;font-size:11px;color:var(--a);min-width:44px;text-align:center;transition:all .3s}
+.lib.hl .vl{border-color:var(--a3);background:rgba(245,158,11,.1);transform:translateY(-3px)}
+.lc{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.lcb{padding:6px 12px;background:var(--bg-s2);border:1px solid var(--bdr);border-radius:7px;color:var(--t2);font-family:'Fira Code',monospace;font-size:10px;cursor:pointer;transition:all .3s}
+.lcb:hover{border-color:var(--a);color:var(--a)}
+/* Flow */
+.fd{display:flex;align-items:center;justify-content:center;gap:0;margin:24px 0;flex-wrap:wrap}
+.fs{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px}
+.fn{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;transition:all .4s;cursor:pointer}
+.fn:hover{transform:scale(1.1)}
+.fn.n1{background:rgba(34,211,167,.12);border:2px solid rgba(34,211,167,.3)}.fn.n2{background:rgba(99,102,241,.12);border:2px solid rgba(99,102,241,.3)}.fn.n3{background:rgba(245,158,11,.12);border:2px solid rgba(245,158,11,.3)}.fn.n4{background:rgba(236,72,153,.12);border:2px solid rgba(236,72,153,.3)}.fn.n5{background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3)}
+.fl{font-size:.72rem;color:var(--t2);text-align:center;max-width:88px;font-weight:500}
+.fa{font-size:1.3rem;color:var(--t3);margin:0 -5px;align-self:center;margin-bottom:20px}
+/* Quiz */
+.qa{background:var(--bg-s);border:1px solid var(--bdr);border-radius:var(--r);padding:24px;margin-top:14px}
+.qq{font-size:1.05rem;font-weight:600;margin-bottom:16px}
+.qo{display:flex;flex-direction:column;gap:7px}
+.qp{display:flex;align-items:center;gap:11px;padding:11px 16px;background:var(--bg-c);border:2px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .3s;font-size:.9rem}
+.qp:hover{border-color:rgba(34,211,167,.3)}
+.qp .lt{font-family:'Fira Code',monospace;font-size:11px;width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:var(--t2);font-weight:600;flex-shrink:0}
+.qp.ok{border-color:var(--a)!important;background:rgba(34,211,167,.08)}.qp.ok .lt{background:var(--a);color:var(--bg)}
+.qp.no{border-color:var(--a4)!important;background:rgba(239,68,68,.05);opacity:.6}
+.qf{margin-top:12px;padding:11px 14px;border-radius:9px;font-size:.85rem;display:none}
+.qf.sh{display:block;animation:fi .4s}
+.qf.gd{background:rgba(34,211,167,.08);border:1px solid rgba(34,211,167,.2);color:var(--a)}
+.qf.bd{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--a4)}
+/* Colab box */
+.clb{background:linear-gradient(135deg,rgba(251,146,60,.08),rgba(251,146,60,.02));border:1px solid rgba(251,146,60,.2);border-radius:var(--r);padding:18px 22px;display:flex;align-items:center;gap:16px;margin-top:18px;transition:all .3s}
+.clb:hover{border-color:rgba(251,146,60,.4)}
+.cli{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cli2{font-size:1.6rem}
+.clif h4{font-size:.92rem;margin-bottom:2px}.clif p{font-size:.8rem;color:var(--t2)}
+.clbt{margin-left:auto;padding:8px 18px;background:#f9ab00;color:#1a1a1a;border:0;border-radius:8px;font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;cursor:pointer;transition:all .3s;white-space:nowrap;text-decoration:none}
+.clbt:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(249,171,0,.3)}
+/* Logo pair */
+.lp{display:flex;align-items:center;gap:22px;margin:16px 0;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--bg-s);border:1px solid var(--bdr);border-radius:11px}
+.li svg{flex-shrink:0}.lt2{font-size:.85rem;color:var(--t2)}.lt2 strong{color:var(--t);display:block;font-size:1rem;margin-bottom:1px}
+/* VR toggle */
+.vrt{display:flex;gap:0;border-radius:9px;overflow:hidden;border:1px solid var(--bdr);margin-bottom:12px}
+.vrt button{flex:1;padding:10px 14px;background:var(--bg-s);border:0;color:var(--t2);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .3s}
+.vrt button.on{background:var(--a);color:var(--bg);font-weight:600}
+.vrt button:hover:not(.on){background:var(--bg-s2)}
+.vcw{position:relative;background:var(--bg-c);border:1px solid var(--bdr);border-radius:11px;overflow:hidden}.vcw canvas{width:100%;display:block}
+/* Layer */
+.lcc{padding:12px 16px;border-radius:9px;margin-bottom:-2px;position:relative;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .3s;border:2px solid transparent}
+.lcc:hover{transform:translateX(5px)}
+.lci{font-size:1.2rem}.lcn{font-size:.85rem;font-weight:500}
+.lct{margin-left:auto;width:34px;height:18px;border-radius:9px;background:rgba(255,255,255,.1);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
+.lct.on{background:var(--a)}.lct::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:all .3s}.lct.on::after{left:18px}
+/* Exec step */
+.es{padding:11px 14px;background:var(--bg-c);border-radius:8px;border-left:3px solid var(--t3);opacity:.3;transition:all .4s;margin-bottom:6px}
+.esl{font-family:'Fira Code',monospace;font-size:10px;color:var(--t3);margin-bottom:2px}.est{font-size:.85rem}
+/* BG */
+.bgg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:.03;background-image:linear-gradient(var(--a) 1px,transparent 1px),linear-gradient(90deg,var(--a) 1px,transparent 1px);background-size:60px 60px}
+/* Stat */
+.sr{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+.sb{flex:1;min-width:110px;text-align:center;padding:18px 12px;background:var(--bg-s);border:1px solid var(--bdr);border-radius:11px}
+.sn{font-family:'Fira Code',monospace;font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sla{color:var(--t2);font-size:.75rem;margin-top:3px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:0}::-webkit-scrollbar-thumb{background:var(--t3);border-radius:10px}
+@media(max-width:768px){.fn{width:54px;height:54px;font-size:1.2rem}.fa{font-size:.9rem}.fl{font-size:.62rem;max-width:60px}.cex{grid-template-columns:1fr}.sr{gap:6px}.sn{font-size:1.4rem}.lp{gap:10px}.li{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="bgg"></div>
+<div class="topbar"><div class="topbar-brand"><div class="logo">TC</div>TRABAJO CIENTÍFICO</div><div class="topbar-center">Clase 1 — <strong>Python + IA para Geoinformación</strong></div><div class="sc" id="sc">1/16</div></div>
+<div class="pt"><div class="pf" id="pf"></div></div>
+
+<div id="P">
+
+<!-- 1 BIENVENIDA -->
+<div class="slide active" data-t="Bienvenida">
+<div class="sl">clase 01 · bienvenida</div>
+<h1 class="st">Bienvenidos a<br><span class="hi">Python</span> + <span class="hb">IA</span> para<br>Geoinformación</h1>
+<p class="ss">Hoy daremos nuestros primeros pasos en programación y geoinformación. <strong>Sin experiencia previa</strong> — desde cero, juntos.</p>
+<div class="lp">
+  <div class="li"><svg width="40" height="40" viewBox="0 0 256 255"><defs><linearGradient id="pa" x1="12%" y1="12%" x2="80%" y2="78%"><stop offset="0%" stop-color="#387EB8"/><stop offset="100%" stop-color="#366994"/></linearGradient><linearGradient id="pb" x1="19%" y1="20%" x2="90%" y2="88%"><stop offset="0%" stop-color="#FFC836"/><stop offset="100%" stop-color="#FFD43B"/></linearGradient></defs><path d="M126.916.072c-64.832 0-60.784 28.115-60.784 28.115l.072 29.128h61.868v8.745H41.631S.145 61.355.145 126.77c0 65.417 36.21 63.097 36.21 63.097h21.61v-30.356s-1.165-36.21 35.632-36.21h61.362s34.475.557 34.475-33.319V33.97S194.67.072 126.916.072zM92.802 19.66a11.12 11.12 0 0111.13 11.13 11.12 11.12 0 01-11.13 11.13 11.12 11.12 0 01-11.13-11.13 11.12 11.12 0 0111.13-11.13z" fill="url(#pa)"/><path d="M128.757 254.126c64.832 0 60.784-28.115 60.784-28.115l-.072-29.127H127.6v-8.745h86.441s41.486 4.705 41.486-60.712c0-65.416-36.21-63.096-36.21-63.096h-21.61v30.355s1.165 36.21-35.632 36.21h-61.362s-34.475-.557-34.475 33.32v56.013s-5.235 33.897 62.518 33.897zm34.114-19.586a11.12 11.12 0 01-11.13-11.13 11.12 11.12 0 0111.13-11.132 11.12 11.12 0 0111.13 11.131 11.12 11.12 0 01-11.13 11.131z" fill="url(#pb)"/></svg><div class="lt2"><strong>Python 3</strong>Lenguaje de programación</div></div>
+  <div class="li"><svg width="40" height="40" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#F9AB00"/><path d="M24 6a18 18 0 0118 18H24V6z" fill="#E8710A"/><path d="M42 24a18 18 0 01-18 18V24h18z" fill="#F9AB00"/><path d="M24 42A18 18 0 016 24h18v18z" fill="#E8710A"/><path d="M6 24A18 18 0 0124 6v18H6z" fill="#F9AB00"/><circle cx="24" cy="24" r="7" fill="#fff"/><circle cx="24" cy="24" r="3.5" fill="#E8710A"/></svg><div class="lt2"><strong>Google Colab</strong>Entorno en la nube</div></div>
+</div>
+<div class="cg" style="max-width:800px;margin-top:16px">
+  <div class="cb"><span class="ic">🎯</span><h3>Hoy aprenderás</h3><p>Python desde cero, Google Colab, conceptos de geoinformación (SIG, vector, ráster, coordenadas, capas) y código real.</p></div>
+  <div class="cb"><span class="ic">🧰</span><h3>Lo que necesitas</h3><p>Un navegador y una cuenta Google. Sin instalaciones. Todo corre en la nube.</p></div>
+</div>
+</div>
+
+<!-- 2 ¿QUÉ ES PYTHON? -->
+<div class="slide" data-t="¿Qué es Python?">
+<div class="sl">conceptos fundamentales</div>
+<h1 class="st">¿Qué es <span class="hi">Python</span>? <svg style="vertical-align:middle" width="34" height="34" viewBox="0 0 256 255"><use href="#pa"/><use href="#pb"/><path d="M126.916.072c-64.832 0-60.784 28.115-60.784 28.115l.072 29.128h61.868v8.745H41.631S.145 61.355.145 126.77c0 65.417 36.21 63.097 36.21 63.097h21.61v-30.356s-1.165-36.21 35.632-36.21h61.362s34.475.557 34.475-33.319V33.97S194.67.072 126.916.072zM92.802 19.66a11.12 11.12 0 0111.13 11.13 11.12 11.12 0 01-11.13 11.13 11.12 11.12 0 01-11.13-11.13 11.12 11.12 0 0111.13-11.13z" fill="url(#pa)"/><path d="M128.757 254.126c64.832 0 60.784-28.115 60.784-28.115l-.072-29.127H127.6v-8.745h86.441s41.486 4.705 41.486-60.712c0-65.416-36.21-63.096-36.21-63.096h-21.61v30.355s1.165 36.21-35.632 36.21h-61.362s-34.475-.557-34.475 33.32v56.013s-5.235 33.897 62.518 33.897zm34.114-19.586a11.12 11.12 0 01-11.13-11.13 11.12 11.12 0 0111.13-11.132 11.12 11.12 0 0111.13 11.131 11.12 11.12 0 01-11.13 11.131z" fill="url(#pb)"/></svg></h1>
+<p class="ss">Un <span class="hi">lenguaje de programación</span> — instrucciones para la computadora en un idioma que ambos entienden. Creado en 1991, hoy es el #1 en ciencia de datos.</p>
+<div class="co tip" style="max-width:680px"><strong>Analogía:</strong> Python es como aprender un nuevo idioma, pero mucho más simple. <code style="color:var(--a)">print("hola")</code> hace exactamente lo que dice: imprime "hola".</div>
+<div class="cg" style="max-width:900px;margin-top:18px">
+  <div class="cb"><span class="ic">📖</span><h3>Simple de leer</h3><p>Se parece al inglés. Legible desde el primer día.</p></div>
+  <div class="cb"><span class="ic">🌍</span><h3>Ideal para geodatos</h3><p>GeoPandas, Rasterio, Folium, Earth Engine — el ecosistema GIS completo.</p></div>
+  <div class="cb"><span class="ic">🤖</span><h3>Puerta a la IA</h3><p>90% del Machine Learning e IA se hace con Python.</p></div>
+</div>
+</div>
+
+<!-- 3 GOOGLE COLAB -->
+<div class="slide" data-t="Google Colab">
+<div class="sl">nuestro entorno de trabajo</div>
+<h1 class="st">Google <span class="hy">Colaboratory</span> <svg style="vertical-align:middle" width="34" height="34" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#F9AB00"/><path d="M24 6a18 18 0 0118 18H24V6z" fill="#E8710A"/><circle cx="24" cy="24" r="7" fill="#fff"/><circle cx="24" cy="24" r="3.5" fill="#E8710A"/></svg></h1>
+<p class="ss">No instalamos nada. Colab es un <span class="hy">notebook en la nube</span> donde escribes y ejecutas Python desde el navegador.</p>
+<div class="cg" style="max-width:900px">
+  <div class="cb"><span class="ic">☁️</span><h3>100% en la nube</h3><p>Solo Chrome + cuenta Google. Sin configuración.</p></div>
+  <div class="cb"><span class="ic">📝</span><h3>Celdas de código</h3><p>Escribes en "celdas" y ejecutas una por una. Resultado inmediato.</p></div>
+  <div class="cb"><span class="ic">💾</span><h3>Se guarda en Drive</h3><p>Automático. Comparte como cualquier documento.</p></div>
+</div>
+<div class="clb" style="max-width:620px"><div class="cli" style="background:rgba(249,171,0,.12)"><span class="cli2">📒</span></div><div class="clif"><h4>Abre tu primer notebook</h4><p>Clic para crear un notebook nuevo</p></div><a href="https://colab.research.google.com/#create=true" target="_blank" class="clbt">Abrir Colab ↗</a></div>
+<div class="co wrn" style="max-width:620px"><strong>Paso a paso:</strong> colab.research.google.com → Iniciar sesión → "Nuevo notebook" → ¡Listo!</div>
+</div>
+
+<!-- 4 FLUJO -->
+<div class="slide" data-t="Flujo">
+<div class="sl">el panorama general</div>
+<h1 class="st">¿Cómo se conecta todo?</h1>
+<p class="ss">Python es la herramienta central. Así fluyen los datos geoespaciales:</p>
+<div class="fd">
+  <div class="fs"><div class="fn n1">🌐</div><div class="fl">Datos Abiertos<br><small style="color:var(--a)">APIs, IGAC</small></div></div><div class="fa">→</div>
+  <div class="fs"><div class="fn n2">🐍</div><div class="fl">Python<br><small style="color:var(--a2)">Procesamiento</small></div></div><div class="fa">→</div>
+  <div class="fs"><div class="fn n3">🗺️</div><div class="fl">Análisis GIS<br><small style="color:var(--a3)">GeoPandas</small></div></div><div class="fa">→</div>
+  <div class="fs"><div class="fn n4">🤖</div><div class="fl">IA / ML<br><small style="color:var(--a5)">Clasificación</small></div></div><div class="fa">→</div>
+  <div class="fs"><div class="fn n5">📊</div><div class="fl">Visualización<br><small style="color:var(--a4)">Mapas</small></div></div>
+</div>
+<div class="co tip" style="max-width:680px"><strong>Hoy →</strong> Bases de Python (🐍) + Introducción a Geoinformación (🗺️). Los dos pilares sobre los que construimos todo.</div>
+</div>
+
+<!-- 5 ¿QUÉ ES GIS? -->
+<div class="slide" data-t="¿Qué es GIS?">
+<div class="sl">geoinformación · conceptos base</div>
+<h1 class="st">¿Qué es un <span class="hi">SIG</span>?</h1>
+<p class="ss">Un <strong>Sistema de Información Geográfica</strong> captura, almacena, analiza y visualiza datos con ubicación en la Tierra.</p>
+<div class="sr"><div class="sb"><div class="sn">80%</div><div class="sla">de datos tienen componente geoespacial</div></div><div class="sb"><div class="sn">SIG</div><div class="sla">Sistema de Información Geográfica</div></div><div class="sb"><div class="sn">GIS</div><div class="sla">Geographic Information System</div></div></div>
+<div class="cg" style="max-width:920px">
+  <div class="cb"><span class="ic">📍</span><h3>¿Dónde?</h3><p>Todo geodato responde "¿dónde está?". Hospital, río, finca — todos tienen coordenadas.</p></div>
+  <div class="cb"><span class="ic">📊</span><h3>¿Qué hay ahí?</h3><p>Además de ubicación: nombre, tipo de suelo, temperatura, uso del terreno.</p></div>
+  <div class="cb"><span class="ic">🔍</span><h3>¿Qué patrones?</h3><p>Descubrir relaciones espaciales: ¿La deforestación sigue a las carreteras?</p></div>
+  <div class="cb"><span class="ic">⏰</span><h3>¿Cómo cambia?</h3><p>Análisis multitemporal: comparar un lugar en diferentes momentos.</p></div>
+</div>
+</div>
+
+<!-- 6 VECTOR VS RASTER -->
+<div class="slide" data-t="Vector vs Ráster">
+<div class="sl">los dos mundos de los geodatos</div>
+<h1 class="st">Datos <span class="hi">Vector</span> vs <span class="hy">Ráster</span></h1>
+<p class="ss">Dos formas de representar el mundo. Alterna entre ellas:</p>
+<div class="tc">
+<div>
+  <div class="vrt" id="vrT"><button class="on" onclick="svr('vector')">📐 Vector</button><button onclick="svr('raster')">🟫 Ráster</button><button onclick="svr('both')">🔀 Comparar</button></div>
+  <div class="vcw"><canvas id="vrC" width="760" height="480"></canvas></div>
+</div>
+<div>
+  <div class="sc2" style="margin-top:0" id="vrI">
+    <div class="sit" id="vrIT">Datos Vectoriales</div>
+    <div id="vrIC"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- 7 CAPAS -->
+<div class="slide" data-t="Capas">
+<div class="sl">concepto fundamental GIS</div>
+<h1 class="st">El SIG trabaja con <span class="hb">capas</span></h1>
+<p class="ss">Un mapa GIS = capas de información apiladas como láminas transparentes. Activa/desactiva:</p>
+<div class="tc">
+<div><div class="vcw"><canvas id="lC" width="660" height="470"></canvas></div></div>
+<div>
+  <div class="sc2" style="margin-top:0">
+    <div class="sit">Controla las capas</div>
+    <div class="lcc" style="background:rgba(34,211,167,.08)" onclick="tl(0)"><span class="lci">🟩</span><span class="lcn">Cobertura vegetal</span><div class="lct on" id="lt0"></div></div>
+    <div class="lcc" style="background:rgba(99,102,241,.08)" onclick="tl(1)"><span class="lci">🔵</span><span class="lcn">Ríos y agua</span><div class="lct on" id="lt1"></div></div>
+    <div class="lcc" style="background:rgba(245,158,11,.08)" onclick="tl(2)"><span class="lci">🟡</span><span class="lcn">Carreteras</span><div class="lct on" id="lt2"></div></div>
+    <div class="lcc" style="background:rgba(239,68,68,.08)" onclick="tl(3)"><span class="lci">🔴</span><span class="lcn">Ciudades</span><div class="lct on" id="lt3"></div></div>
+    <div class="lcc" style="background:rgba(200,100,200,.08)" onclick="tl(4)"><span class="lci">🟪</span><span class="lcn">Límites municipales</span><div class="lct on" id="lt4"></div></div>
+    <div class="co tip" style="margin-top:12px"><strong>Cada capa = un archivo.</strong> En Python las cargamos por separado y las superponemos.</div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- 8 COORDENADAS -->
+<div class="slide" data-t="Coordenadas">
+<div class="sl">sistemas de referencia</div>
+<h1 class="st">Coordenadas y <span class="hp">Proyecciones</span></h1>
+<p class="ss">Toda geoinformación necesita un <strong>sistema de referencia</strong>. Haz clic en el mapa:</p>
+<div class="cex">
+<div class="mm"><canvas id="mC" onclick="mc(event)"></canvas></div>
+<div>
+  <div class="crd"><h4>📍 Latitud (Norte-Sur)</h4><div class="crv lat" id="cLa">4.1420°</div></div>
+  <div class="crd"><h4>📍 Longitud (Este-Oeste)</h4><div class="crv lon" id="cLo">-73.6266°</div></div>
+  <div class="crp" id="cCd"><span class="ccm"># En Python:</span>
+<span class="cv">latitud</span> = <span class="cn">4.1420</span>
+<span class="cv">longitud</span> = <span class="cn">-73.6266</span>
+<span class="cv">punto</span> = [<span class="cv">latitud</span>, <span class="cv">longitud</span>]</div>
+  <div class="co tip" style="font-size:.8rem"><strong>CRS:</strong> El más común es <span class="hi">WGS84 (EPSG:4326)</span> del GPS. Colombia usa <span class="hb">MAGNA-SIRGAS</span>. GeoPandas maneja proyecciones automáticamente.</div>
+</div>
+</div>
+</div>
+
+<!-- 9 PRIMER CÓDIGO -->
+<div class="slide" data-t="Primer código">
+<div class="sl">¡manos al código!</div>
+<h1 class="st">Tu primer <span class="hi">programa</span></h1>
+<p class="ss">Cópialo en Google Colab y presioma ▶ (o Shift+Enter):</p>
+<div class="tc">
+<div>
+  <div class="cp"><div class="ct"><div class="cd"><span></span><span></span><span></span></div><div class="cf">hola_geo.py</div><button class="rb" onclick="r1()">▶ Ejecutar</button></div>
+  <div class="ce"><span class="ccm"># Mi primer programa en Python</span>
+<span class="cbu">print</span>(<span class="cs">"¡Hola, mundo geoespacial! 🌍"</span>)
+<span class="cbu">print</span>(<span class="cs">"Estoy aprendiendo Python"</span>)
+<span class="cbu">print</span>(<span class="cs">"para analizar geodatos"</span>)</div>
+  <div class="oa" id="o1"><div class="ol">Salida</div><div id="o1t"></div></div></div>
+  <div class="co tip" style="margin-top:10px"><strong>print()</strong> muestra texto en pantalla. Todo entre paréntesis y comillas se imprime.</div>
+</div>
+<div>
+  <div class="sc2" style="margin-top:0"><div class="sit">¿Qué pasa al ejecutar?</div>
+    <div class="es" data-s="1"><div class="esl">Paso 1</div><div class="est">Python lee <strong>línea por línea</strong>, de arriba a abajo</div></div>
+    <div class="es" data-s="2"><div class="esl">Paso 2</div><div class="est">Ignora <code style="color:var(--a)">#</code> → son <strong>comentarios</strong></div></div>
+    <div class="es" data-s="3"><div class="esl">Paso 3</div><div class="est"><code style="color:var(--a)">print()</code> → ejecuta → muestra texto</div></div>
+    <div class="es" data-s="4"><div class="esl">Paso 4</div><div class="est">Repite para cada print → ¡resultado!</div></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- 10 VARIABLES -->
+<div class="slide" data-t="Variables">
+<div class="sl">concepto clave</div>
+<h1 class="st">Variables: <span class="hb">cajas con nombre</span></h1>
+<p class="ss">Una variable guarda información con un nombre. Edita los valores:</p>
+<div class="sc2"><div class="sit">Simulador de variables</div>
+<div class="vs">
+<div>
+  <div class="vf"><label>ciudad =</label><input type="text" id="vC" value="Villavicencio" oninput="um()"></div>
+  <div class="vf"><label>lat =</label><input type="number" id="vLa" value="4.142" step=".001" oninput="um()"></div>
+  <div class="vf"><label>lon =</label><input type="number" id="vLo" value="-73.626" step=".001" oninput="um()"></div>
+  <div class="vf"><label>poblacion =</label><input type="number" id="vP" value="531275" oninput="um()"></div>
+  <div class="vf"><label>es_capital =</label><select id="vCa" onchange="um()"><option value="True">True</option><option value="False">False</option></select></div>
+</div>
+<div class="vm"><div class="vmt">🧠 Memoria de Python</div><div id="mS"></div><div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);font-family:'Fira Code',monospace;font-size:11px;color:#c9d1d9;line-height:1.85" id="mCd"></div></div>
+</div></div>
+</div>
+
+<!-- 11 TIPOS -->
+<div class="slide" data-t="Tipos de datos">
+<div class="sl">tipos de datos</div>
+<h1 class="st">Cada dato tiene un <span class="hp">tipo</span></h1>
+<p class="ss">Python necesita saber qué tipo de información guarda. Haz clic:</p>
+<div class="te">
+  <div class="tcd" data-type="int" onclick="st('int')"><div class="ti">🔢</div><div class="tn">int</div><div class="td2">Entero</div></div>
+  <div class="tcd" data-type="float" onclick="st('float')"><div class="ti">📐</div><div class="tn">float</div><div class="td2">Decimal</div></div>
+  <div class="tcd" data-type="str" onclick="st('str')"><div class="ti">📝</div><div class="tn">str</div><div class="td2">Texto</div></div>
+  <div class="tcd" data-type="bool" onclick="st('bool')"><div class="ti">✅</div><div class="tn">bool</div><div class="td2">V/F</div></div>
+  <div class="tcd" data-type="list" onclick="st('list')"><div class="ti">📋</div><div class="tn">list</div><div class="td2">Lista</div></div>
+</div>
+<div class="tdt" id="tD"><div class="tex" id="tE"></div><div class="tan" id="tA"></div></div>
+</div>
+
+<!-- 12 LISTAS -->
+<div class="slide" data-t="Listas">
+<div class="sl">estructuras de datos</div>
+<h1 class="st">Listas: <span class="hy">colecciones ordenadas</span></h1>
+<p class="ss">Fila de cajas numeradas desde <span class="hy">0</span>. Interactúa:</p>
+<div class="sc2"><div class="sit">Simulador de listas</div>
+<div style="font-family:'Fira Code',monospace;font-size:11px;color:#c9d1d9;margin-bottom:12px"><span class="cv">departamentos</span> = [<span class="cs" id="lCd">"Meta","Casanare","Arauca","Vichada","Guainía"</span>]</div>
+<div class="lv" id="lV"></div>
+<div class="lc">
+  <button class="lcb" onclick="la('a')">🔍 [2]</button>
+  <button class="lcb" onclick="la('p')">➕ .append()</button>
+  <button class="lcb" onclick="la('r')">🗑️ .pop()</button>
+  <button class="lcb" onclick="la('l')">📏 len()</button>
+  <button class="lcb" onclick="la('x')">🔄 Reset</button>
+</div>
+<div class="oa vi" id="lO"><div class="ol">Resultado</div><div id="lOt">Haz clic en un botón</div></div>
+</div>
+</div>
+
+<!-- 13 OPERACIONES -->
+<div class="slide" data-t="Operaciones">
+<div class="sl">cálculos con python</div>
+<h1 class="st">Python como <span class="hi">calculadora</span> geoespacial</h1>
+<p class="ss">Modifica coordenadas y ve la distancia en tiempo real:</p>
+<div class="tc">
+<div><div class="sc2" style="margin-top:0"><div class="sit">Calculadora de distancia</div>
+  <div class="vf"><label style="min-width:38px">lat₁</label><input type="number" id="cL1" value="4.142" step=".01" oninput="cd()"></div>
+  <div class="vf"><label style="min-width:38px">lon₁</label><input type="number" id="cO1" value="-73.626" step=".01" oninput="cd()"></div>
+  <div class="vf"><label style="min-width:38px">lat₂</label><input type="number" id="cL2" value="4.601" step=".01" oninput="cd()"></div>
+  <div class="vf"><label style="min-width:38px">lon₂</label><input type="number" id="cO2" value="-74.072" step=".01" oninput="cd()"></div>
+  <div style="text-align:center;margin-top:16px;padding:16px;background:var(--bg-c);border-radius:9px"><div style="font-size:.7rem;color:var(--t3)">DISTANCIA APROXIMADA</div><div style="font-family:'Fira Code',monospace;font-size:1.9rem;color:var(--a)" id="dR">63.2 km</div></div>
+</div></div>
+<div>
+  <div class="cp"><div class="ct"><div class="cd"><span></span><span></span><span></span></div><div class="cf">distancia.py</div><button class="rb" onclick="rd()">▶ Ejecutar</button></div>
+  <div class="ce"><span class="ccm"># Distancia simplificada</span>
+<span class="ck">import</span> math
+<span class="cv">lat1</span>, <span class="cv">lon1</span> = <span class="cn" id="d1">4.142</span>, <span class="cn" id="d2">-73.626</span>
+<span class="cv">lat2</span>, <span class="cv">lon2</span> = <span class="cn" id="d3">4.601</span>, <span class="cn" id="d4">-74.072</span>
+<span class="cv">km</span> = math.<span class="cff">sqrt</span>((<span class="cv">lat2</span>-<span class="cv">lat1</span>)**<span class="cn">2</span>+(<span class="cv">lon2</span>-<span class="cv">lon1</span>)**<span class="cn">2</span>)*<span class="cn">111.32</span>
+<span class="cbu">print</span>(<span class="cs">f"📏 Distancia: {</span><span class="cv">km</span><span class="cs">:.1f} km"</span>)</div>
+  <div class="oa" id="dO"><div class="ol">Salida</div><div id="dOt"></div></div></div>
+  <div class="co tip" style="margin-top:10px"><strong>Operadores:</strong> + - * / ** (potencia) math.sqrt() (raíz)</div>
+</div>
+</div>
+</div>
+
+<!-- 14 QUIZ -->
+<div class="slide" data-t="Quiz">
+<div class="sl">comprueba tu aprendizaje</div>
+<h1 class="st">Mini <span class="hy">Quiz</span> — Python + GIS</h1>
+<p class="ss">4 preguntas rápidas. Sin calificación, solo para medir comprensión:</p>
+<div style="max-width:700px">
+  <div class="qa" id="q1"><div class="qq">1. ¿Qué tipo de dato es <code style="color:var(--a)">4.1420</code>?</div><div class="qo"><div class="qp" onclick="cq('q1',this,0)"><span class="lt">A</span>int</div><div class="qp" onclick="cq('q1',this,1)"><span class="lt">B</span>float</div><div class="qp" onclick="cq('q1',this,0)"><span class="lt">C</span>str</div></div><div class="qf" id="q1f"></div></div>
+  <div class="qa" id="q2"><div class="qq">2. Un río se representa mejor como:</div><div class="qo"><div class="qp" onclick="cq('q2',this,0)"><span class="lt">A</span>Ráster</div><div class="qp" onclick="cq('q2',this,1)"><span class="lt">B</span>Vector línea</div><div class="qp" onclick="cq('q2',this,0)"><span class="lt">C</span>Vector punto</div></div><div class="qf" id="q2f"></div></div>
+  <div class="qa" id="q3"><div class="qq">3. Índice del primer elemento de una lista:</div><div class="qo"><div class="qp" onclick="cq('q3',this,1)"><span class="lt">A</span>0</div><div class="qp" onclick="cq('q3',this,0)"><span class="lt">B</span>1</div></div><div class="qf" id="q3f"></div></div>
+  <div class="qa" id="q4"><div class="qq">4. Una imagen satelital (Landsat, Sentinel) es:</div><div class="qo"><div class="qp" onclick="cq('q4',this,0)"><span class="lt">A</span>Vector</div><div class="qp" onclick="cq('q4',this,1)"><span class="lt">B</span>Ráster</div></div><div class="qf" id="q4f"></div></div>
+</div>
+</div>
+
+<!-- 15 PYTHON+GIS COLAB -->
+<div class="slide" data-t="Python+GIS">
+<div class="sl">conectando los mundos</div>
+<h1 class="st"><span class="hi">Python</span> + <span class="hb">GIS</span> en Colab</h1>
+<p class="ss">Código real que escribirás pronto. Todo corre en Colab:</p>
+<div class="cp"><div class="ct"><div class="cd"><span></span><span></span><span></span></div><div class="cf">mi_mapa.py — Colab</div><button class="rb" onclick="rm()">▶ Ejecutar</button></div>
+<div class="ce"><span class="ccm"># 🗺️ Mapa interactivo en Colab</span>
+!pip install folium -q
+<span class="ck">import</span> folium
+
+<span class="cv">mapa</span> = folium.<span class="cff">Map</span>(
+    <span class="cv">location</span>=[<span class="cn">4.142</span>, <span class="cn">-73.626</span>],
+    <span class="cv">zoom_start</span>=<span class="cn">12</span>,
+    <span class="cv">tiles</span>=<span class="cs">"CartoDB positron"</span>)
+
+<span class="cv">ciudades</span> = {<span class="cs">"Villavicencio"</span>:[<span class="cn">4.142</span>,<span class="cn">-73.626</span>],
+            <span class="cs">"Acacías"</span>:[<span class="cn">3.987</span>,<span class="cn">-73.758</span>],
+            <span class="cs">"Cumaral"</span>:[<span class="cn">4.270</span>,<span class="cn">-73.486</span>]}
+
+<span class="ck">for</span> <span class="cv">n</span>,<span class="cv">c</span> <span class="ck">in</span> <span class="cv">ciudades</span>.<span class="cff">items</span>():
+    folium.<span class="cff">Marker</span>(<span class="cv">c</span>,<span class="cv">popup</span>=<span class="cv">n</span>).<span class="cff">add_to</span>(<span class="cv">mapa</span>)
+<span class="cv">mapa</span></div>
+<div class="oa" id="mO"><div class="ol">Salida</div><div id="mOt"></div></div></div>
+<div class="clb" style="max-width:620px"><div class="cli" style="background:rgba(249,171,0,.12)"><span class="cli2">📒</span></div><div class="clif"><h4>Practica en Colab</h4><p>Copia y ejecuta este código</p></div><a href="https://colab.research.google.com/#create=true" target="_blank" class="clbt">Abrir Colab ↗</a></div>
+</div>
+
+<!-- 16 CIERRE -->
+<div class="slide" data-t="Cierre">
+<div class="sl">resumen y tarea</div>
+<h1 class="st">Lo que lograste <span class="hi">hoy</span></h1>
+<p class="ss">De cero a entender Python Y geoinformación en una clase.</p>
+<div class="cg" style="max-width:920px">
+  <div class="cb"><span class="ic">✅</span><h3>Python básico</h3><p>print(), variables, tipos, listas, operaciones</p></div>
+  <div class="cb"><span class="ic">✅</span><h3>Google Colab</h3><p>Entorno configurado, código ejecutado</p></div>
+  <div class="cb"><span class="ic">✅</span><h3>¿Qué es un SIG?</h3><p>Preguntas fundamentales de la geoinformación</p></div>
+  <div class="cb"><span class="ic">✅</span><h3>Vector vs Ráster</h3><p>Geometrías vs píxeles, cuándo usar cada uno</p></div>
+  <div class="cb"><span class="ic">✅</span><h3>Capas GIS</h3><p>Superponer información por temas</p></div>
+  <div class="cb"><span class="ic">✅</span><h3>Coordenadas & CRS</h3><p>Latitud, longitud, WGS84, MAGNA-SIRGAS</p></div>
+</div>
+<div class="clb" style="max-width:680px;background:linear-gradient(135deg,rgba(34,211,167,.08),rgba(99,102,241,.05));border-color:rgba(34,211,167,.2)">
+  <div class="cli" style="background:rgba(34,211,167,.12)"><span class="cli2">📝</span></div>
+  <div class="clif"><h4>📋 Tarea — Próxima clase</h4><p>Notebook en Colab: 1) Variables de tu municipio 2) Lista con 5 municipios del Meta 3) Distancia a Bogotá</p></div>
+</div>
+<div style="text-align:center;margin-top:30px"><div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--t3);letter-spacing:2px">TRABAJO CIENTÍFICO</div><div style="font-size:.82rem;color:var(--t2);margin-top:3px">@TCientifico · trabajocientifico.github.io</div></div>
+</div>
+
+</div>
+
+<div class="nc"><button class="nb" id="pB" onclick="ch(-1)">←</button><div class="nd" id="nD"></div><button class="nb" id="nB" onclick="ch(1)">→</button></div>
+
+<script>
+let c=0;const S=document.querySelectorAll('.slide'),T=S.length,D=document.getElementById('nD');
+S.forEach((_,i)=>{const d=document.createElement('div');d.className='nm'+(i===0?' on':'');d.onclick=()=>go(i);D.appendChild(d);});
+function go(n){S[c].classList.remove('active');c=Math.max(0,Math.min(n,T-1));S[c].classList.add('active');ui();
+if(c===5)iv();if(c===6)il();if(c===7)im();if(c===9)um();if(c===11)rl();if(c===12)cd();}
+function ch(d){go(c+d)}
+function ui(){document.getElementById('sc').textContent=`${c+1} / ${T}`;document.getElementById('pf').style.width=((c+1)/T*100)+'%';document.querySelectorAll('.nm').forEach((d,i)=>d.classList.toggle('on',i===c));document.getElementById('pB').disabled=c===0;document.getElementById('nB').disabled=c===T-1;}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();ch(1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();ch(-1)}});
+ui();
+
+// Run hello
+function r1(){const o=document.getElementById('o1'),t=document.getElementById('o1t');o.classList.add('vi');t.textContent='';
+const ss=document.querySelectorAll('.es'),ls=['¡Hola, mundo geoespacial! 🌍','Estoy aprendiendo Python','para analizar geodatos'];let i=0;
+ss.forEach(s=>{s.style.opacity='.3';s.style.borderLeftColor='var(--t3)';});
+(function a(){if(i<ss.length){ss[i].style.opacity='1';ss[i].style.borderLeftColor='var(--a)';if(i>=1&&i-1<ls.length)t.textContent+=(t.textContent?'\n':'')+ls[i-1];i++;setTimeout(a,450)}})();}
+
+// Variables
+function um(){const ci=document.getElementById('vC').value,la=document.getElementById('vLa').value,lo=document.getElementById('vLo').value,p=document.getElementById('vP').value,ca=document.getElementById('vCa').value;
+const vs=[{n:'ciudad',v:`"${ci}"`,t:'str',a:'0x7f01'},{n:'lat',v:la,t:'float',a:'0x7f02'},{n:'lon',v:lo,t:'float',a:'0x7f03'},{n:'poblacion',v:parseInt(p).toLocaleString(),t:'int',a:'0x7f04'},{n:'es_capital',v:ca,t:'bool',a:'0x7f05'}];
+document.getElementById('mS').innerHTML=vs.map(v=>`<div class="ms"><span class="ad">${v.a}</span><span class="na">${v.n}</span><span class="va">${v.v}</span><span class="tb">${v.t}</span></div>`).join('');
+document.getElementById('mCd').innerHTML=`<span class="ccm"># Código:</span>\n<span class="cv">ciudad</span> = <span class="cs">"${ci}"</span>\n<span class="cv">lat</span> = <span class="cn">${la}</span>\n<span class="cv">lon</span> = <span class="cn">${lo}</span>\n<span class="cv">poblacion</span> = <span class="cn">${p}</span>\n<span class="cv">es_capital</span> = <span class="cn">${ca}</span>`;}
+
+// Types
+const td={int:{e:`<span class="cv">poblacion</span> = <span class="cn">531275</span>\n<span class="cbu">print</span>(<span class="cbu">type</span>(<span class="cv">poblacion</span>))  <span class="ccm"># &lt;class 'int'&gt;</span>`,a:`<strong>Analogía:</strong> Enteros = contar. Sin punto decimal. Población, año, código.`},float:{e:`<span class="cv">latitud</span> = <span class="cn">4.1420</span>\n<span class="cbu">print</span>(<span class="cbu">type</span>(<span class="cv">latitud</span>))  <span class="ccm"># &lt;class 'float'&gt;</span>`,a:`<strong>Analogía:</strong> Decimales = mediciones precisas. Coordenadas, temperatura, área.`},str:{e:`<span class="cv">ciudad</span> = <span class="cs">"Villavicencio"</span>\n<span class="cbu">print</span>(<span class="cbu">type</span>(<span class="cv">ciudad</span>))  <span class="ccm"># &lt;class 'str'&gt;</span>`,a:`<strong>Analogía:</strong> Texto entre comillas. Nombres, descripciones. Comillas simples o dobles.`},bool:{e:`<span class="cv">es_capital</span> = <span class="cn">True</span>\n<span class="cbu">print</span>(<span class="cbu">type</span>(<span class="cv">es_capital</span>))  <span class="ccm"># &lt;class 'bool'&gt;</span>`,a:`<strong>Analogía:</strong> Sí/No. ¿Es capital? ¿Llueve? Solo True o False.`},list:{e:`<span class="cv">deptos</span> = [<span class="cs">"Meta"</span>, <span class="cs">"Casanare"</span>]\n<span class="cbu">print</span>(<span class="cv">deptos</span>[<span class="cn">0</span>])  <span class="ccm"># "Meta"</span>`,a:`<strong>Analogía:</strong> Fila de casilleros desde 0. Puede mezclar tipos. Perfecta para coordenadas.`}};
+function st(t){document.querySelectorAll('.tcd').forEach(c2=>c2.classList.toggle('sel',c2.dataset.type===t));document.getElementById('tD').classList.add('vi');document.getElementById('tE').innerHTML=td[t].e;document.getElementById('tA').innerHTML=td[t].a;}
+
+// Map
+let mi=false,mp={x:.35,y:.45};
+function im(){if(mi)return;mi=true;const c2=document.getElementById('mC'),r=c2.parentElement.getBoundingClientRect();c2.width=r.width*2;c2.height=r.height*2;c2.style.width=r.width+'px';c2.style.height=r.height+'px';dm();}
+function dm(){const c2=document.getElementById('mC'),x=c2.getContext('2d'),w=c2.width,h=c2.height;x.fillStyle='#0d1117';x.fillRect(0,0,w,h);
+x.strokeStyle='rgba(34,211,167,.06)';x.lineWidth=1;for(let i=0;i<w;i+=40){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke();}for(let i=0;i<h;i+=40){x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke();}
+x.beginPath();x.strokeStyle='rgba(34,211,167,.25)';x.lineWidth=2;
+[[.25,.08],[.18,.18],[.12,.28],[.10,.42],[.15,.55],[.12,.68],[.18,.78],[.25,.85],[.35,.88],[.50,.92],[.62,.85],[.72,.75],[.78,.60],[.80,.45],[.75,.30],[.65,.20],[.55,.12],[.42,.06],[.25,.08]].forEach((p,i)=>{i===0?x.moveTo(p[0]*w,p[1]*h):x.lineTo(p[0]*w,p[1]*h)});x.stroke();x.fillStyle='rgba(34,211,167,.03)';x.fill();
+x.font='18px Fira Code';x.fillStyle='rgba(34,211,167,.14)';x.fillText('COLOMBIA',w*.3,h*.5);
+[{x:.34,y:.28,n:'Bogotá'},{x:.35,y:.45,n:'Villavicencio'},{x:.22,y:.30,n:'Medellín'}].forEach(c3=>{x.beginPath();x.arc(c3.x*w,c3.y*h,4,0,Math.PI*2);x.fillStyle='rgba(99,102,241,.35)';x.fill();x.font='14px Outfit';x.fillStyle='rgba(255,255,255,.18)';x.fillText(c3.n,c3.x*w+8,c3.y*h+4);});
+const px=mp.x*w,py=mp.y*h;x.beginPath();x.arc(px,py,11,0,Math.PI*2);x.fillStyle='rgba(34,211,167,.2)';x.fill();x.beginPath();x.arc(px,py,5,0,Math.PI*2);x.fillStyle='#22d3a7';x.fill();}
+function mc(e){const c2=document.getElementById('mC'),r=c2.getBoundingClientRect();mp={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};
+const la=(12-mp.y*16).toFixed(4),lo=(-82+mp.x*16).toFixed(4);document.getElementById('cLa').textContent=la+'°';document.getElementById('cLo').textContent=lo+'°';
+document.getElementById('cCd').innerHTML=`<span class="ccm"># En Python:</span>\n<span class="cv">latitud</span> = <span class="cn">${la}</span>\n<span class="cv">longitud</span> = <span class="cn">${lo}</span>\n<span class="cv">punto</span> = [<span class="cv">latitud</span>, <span class="cv">longitud</span>]`;dm();}
+
+// Lists
+let ld=["Meta","Casanare","Arauca","Vichada","Guainía"],hi=-1;
+function rl(){document.getElementById('lV').innerHTML=ld.map((d,i)=>`<div class="lib ${i===hi?'hl':''}" style="animation:fi .3s ${i*.03}s both"><div class="ix">[${i}]</div><div class="vl">"${d}"</div></div>`).join('');document.getElementById('lCd').textContent=ld.map(d=>`"${d}"`).join(', ');}
+function la(a){const o=document.getElementById('lOt');hi=-1;
+if(a==='a'){hi=2;o.innerHTML=`[2] → <span style="color:var(--a3)">"${ld[2]}"</span> (3er elemento, índice desde 0)`;}
+else if(a==='p'){if(!ld.includes('Vaupés'))ld.push('Vaupés');hi=ld.length-1;o.innerHTML=`.append("Vaupés") → Ahora: ${ld.length} elementos`;}
+else if(a==='r'){if(ld.length>1){const r=ld.pop();o.innerHTML=`.pop() → Eliminó "${r}". Quedan: ${ld.length}`;}}
+else if(a==='l'){o.innerHTML=`len() → <span style="color:var(--a)">${ld.length}</span>`;}
+else{ld=["Meta","Casanare","Arauca","Vichada","Guainía"];o.textContent='Reiniciada';}rl();}
+rl();
+
+// Distance
+function cd(){const l1=parseFloat(document.getElementById('cL1').value)||0,o1=parseFloat(document.getElementById('cO1').value)||0,l2=parseFloat(document.getElementById('cL2').value)||0,o2=parseFloat(document.getElementById('cO2').value)||0;
+const k=Math.sqrt((l2-l1)**2+(o2-o1)**2)*111.32;document.getElementById('dR').textContent=k.toFixed(1)+' km';
+document.getElementById('d1').textContent=l1;document.getElementById('d2').textContent=o1;document.getElementById('d3').textContent=l2;document.getElementById('d4').textContent=o2;}
+function rd(){cd();document.getElementById('dO').classList.add('vi');const l1=parseFloat(document.getElementById('cL1').value)||0,o1=parseFloat(document.getElementById('cO1').value)||0,l2=parseFloat(document.getElementById('cL2').value)||0,o2=parseFloat(document.getElementById('cO2').value)||0;
+document.getElementById('dOt').textContent=`📏 Distancia: ${(Math.sqrt((l2-l1)**2+(o2-o1)**2)*111.32).toFixed(1)} km`;}
+
+// Map code
+function rm(){document.getElementById('mO').classList.add('vi');const t=document.getElementById('mOt');t.innerHTML='';
+const ls=['Instalando folium... ✓','Creando mapa [4.142, -73.626]...','Marcador: Villavicencio ✓','Marcador: Acacías ✓','Marcador: Cumaral ✓','✅ Mapa interactivo generado!'];let i=0;(function f(){if(i<ls.length){t.innerHTML+=(i?'\n':'')+ls[i];i++;setTimeout(f,300)}})();}
+
+// Quiz
+const qm={q1:{g:'¡Correcto! Tiene decimales → float.',b:'4.1420 tiene punto decimal → float.'},q2:{g:'¡Exacto! Río = entidad continua → línea vectorial.',b:'Un río tiene forma → línea vectorial.'},q3:{g:'¡Sí! Índices empiezan en 0.',b:'En Python: primer elemento = índice 0.'},q4:{g:'¡Perfecto! Imágenes satelitales = cuadrícula de píxeles = ráster.',b:'Imágenes satelitales = píxeles → ráster.'}};
+function cq(id,el,ok){const q=document.getElementById(id);if(q.dataset.a)return;q.dataset.a='1';q.querySelectorAll('.qp').forEach(o=>{o.style.pointerEvents='none';if(o!==el)o.classList.add('no');});el.classList.add(ok?'ok':'no');const f=document.getElementById(id+'f');f.classList.add('sh');f.className=`qf sh ${ok?'gd':'bd'}`;f.textContent=ok?qm[id].g:qm[id].b;}
+
+// Vector/Raster
+let vrM='vector',vrI=false;
+function iv(){if(vrI)return;vrI=true;dvr();uvr();}
+function svr(m){vrM=m;document.querySelectorAll('#vrT button').forEach((b,i)=>b.classList.toggle('on',['vector','raster','both'][i]===m));dvr();uvr();}
+function dvr(){const c2=document.getElementById('vrC'),x=c2.getContext('2d'),w=c2.width,h=c2.height;x.fillStyle='#0d1117';x.fillRect(0,0,w,h);
+if(vrM==='raster'||vrM==='both'){const ox=vrM==='both'?w/2+8:0,rw=vrM==='both'?w/2-8:w;
+const cs=['#1a5c3a','#2d8a56','#1a5c3a','#3b9e6b','#2d8a56','#1a5c3a','#234f6e','#1a5c3a','#2d8a56','#2d8a56','#3b9e6b','#1a5c3a','#234f6e','#234f6e','#1e6e8a','#c4a55a','#2d8a56','#3b9e6b','#1a5c3a','#234f6e','#1e6e8a','#c4a55a','#8b6914','#3b9e6b','#2d8a56','#1e6e8a','#c4a55a','#8b6914','#c4a55a','#2d8a56','#1a5c3a','#3b9e6b','#234f6e','#1e6e8a','#c4a55a','#8b6914','#2d8a56','#1a5c3a','#234f6e','#1e6e8a','#c4a55a','#8b6914','#c4a55a','#2d8a56','#3b9e6b','#234f6e','#c4a55a','#8b6914','#c4a55a'];
+for(let r=0;r<7;r++)for(let cl=0;cl<7;cl++){x.fillStyle=cs[(r*7+cl)%cs.length];x.fillRect(ox+cl*(rw/7),r*(h/7),rw/7-1,h/7-1);x.strokeStyle='rgba(255,255,255,.06)';x.strokeRect(ox+cl*(rw/7),r*(h/7),rw/7-1,h/7-1);}
+x.fillStyle='rgba(255,255,255,.4)';x.font='bold 13px Outfit';x.fillText('RÁSTER',ox+rw/2-26,h-12);x.font='10px Fira Code';x.fillStyle='rgba(255,255,255,.3)';x.fillText('Cada celda = 1 píxel con valor',ox+8,22);}
+if(vrM==='vector'||vrM==='both'){const vw=vrM==='both'?w/2-8:w;
+x.beginPath();x.moveTo(50,90);x.lineTo(180,70);x.lineTo(300,120);x.lineTo(320,280);x.lineTo(160,350);x.lineTo(40,290);x.closePath();x.fillStyle='rgba(34,211,167,.1)';x.fill();x.strokeStyle='rgba(34,211,167,.45)';x.lineWidth=2;x.stroke();x.fillStyle='rgba(34,211,167,.5)';x.font='11px Fira Code';x.fillText('Polígono: Zona boscosa',70,230);
+x.beginPath();x.moveTo(vw-15,30);x.quadraticCurveTo(vw*.55,180,35,h-35);x.strokeStyle='rgba(99,102,241,.5)';x.lineWidth=3;x.stroke();x.fillStyle='rgba(99,102,241,.5)';x.font='11px Fira Code';x.fillText('Línea: Río',vw*.5,140);
+[[105,125],[230,185],[155,310]].forEach(p=>{x.beginPath();x.arc(p[0],p[1],6,0,Math.PI*2);x.fillStyle='rgba(245,158,11,.6)';x.fill();x.beginPath();x.arc(p[0],p[1],10,0,Math.PI*2);x.strokeStyle='rgba(245,158,11,.25)';x.lineWidth=1;x.stroke();});
+x.fillStyle='rgba(245,158,11,.5)';x.font='11px Fira Code';x.fillText('Puntos: Estaciones',240,200);
+x.fillStyle='rgba(255,255,255,.4)';x.font='bold 13px Outfit';x.fillText('VECTOR',vw/2-26,h-12);}
+if(vrM==='both'){x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=1;x.setLineDash([5,4]);x.beginPath();x.moveTo(w/2,0);x.lineTo(w/2,h);x.stroke();x.setLineDash([]);x.fillStyle='rgba(255,255,255,.18)';x.font='bold 11px Fira Code';x.fillText('VS',w/2-7,h/2);}}
+
+function uvr(){const ti=document.getElementById('vrIT'),co=document.getElementById('vrIC');
+if(vrM==='vector'){ti.textContent='Datos Vectoriales';co.innerHTML=`<p style="color:var(--t2);font-size:.85rem;line-height:1.6;margin-bottom:10px">Geometrías <strong style="color:var(--a)">matemáticas exactas</strong>:</p><div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>⚫</span><div><strong style="font-size:.82rem">Puntos</strong> — <span style="font-size:.78rem;color:var(--t2)">Ciudades, pozos</span></div></div><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>〰️</span><div><strong style="font-size:.82rem">Líneas</strong> — <span style="font-size:.78rem;color:var(--t2)">Ríos, carreteras</span></div></div><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>⬡</span><div><strong style="font-size:.82rem">Polígonos</strong> — <span style="font-size:.78rem;color:var(--t2)">Municipios, fincas</span></div></div></div><div style="margin-top:10px;padding:10px;background:var(--bg-c);border-radius:7px;font-family:'Fira Code',monospace;font-size:10px;line-height:1.6;color:#c9d1d9"><span class="ccm"># Python:</span> GeoPandas, Shapely<br><span class="ccm"># Formatos:</span> .shp .geojson .gpkg</div>`;}
+else if(vrM==='raster'){ti.textContent='Datos Ráster';co.innerHTML=`<p style="color:var(--t2);font-size:.85rem;line-height:1.6;margin-bottom:10px"><strong style="color:var(--a3)">Cuadrícula de píxeles</strong>, cada uno con un valor:</p><div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>🛰️</span><div><strong style="font-size:.82rem">Imágenes satelitales</strong> — <span style="font-size:.78rem;color:var(--t2)">Landsat, Sentinel</span></div></div><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>🏔️</span><div><strong style="font-size:.82rem">Modelo de elevación</strong> — <span style="font-size:.78rem;color:var(--t2)">Altura del terreno</span></div></div><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg-c);border-radius:7px"><span>🌡️</span><div><strong style="font-size:.82rem">Temperatura</strong> — <span style="font-size:.78rem;color:var(--t2)">Valores continuos</span></div></div></div><div style="margin-top:10px;padding:10px;background:var(--bg-c);border-radius:7px;font-family:'Fira Code',monospace;font-size:10px;line-height:1.6;color:#c9d1d9"><span class="ccm"># Python:</span> Rasterio, xarray<br><span class="ccm"># Formatos:</span> .tif .nc .hdf</div>`;}
+else{ti.textContent='Comparación';co.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.78rem"><tr style="border-bottom:1px solid var(--bdr)"><td></td><td style="padding:8px;color:var(--a);font-weight:600">Vector</td><td style="padding:8px;color:var(--a3);font-weight:600">Ráster</td></tr><tr style="border-bottom:1px solid var(--bdr)"><td style="padding:8px;color:var(--t2)">Estructura</td><td style="padding:8px">Geometrías</td><td style="padding:8px">Píxeles</td></tr><tr style="border-bottom:1px solid var(--bdr)"><td style="padding:8px;color:var(--t2)">Mejor para</td><td style="padding:8px">Límites, rutas</td><td style="padding:8px">Superficies, imágenes</td></tr><tr style="border-bottom:1px solid var(--bdr)"><td style="padding:8px;color:var(--t2)">Ejemplo</td><td style="padding:8px">Municipios del Meta</td><td style="padding:8px">Sentinel-2</td></tr><tr><td style="padding:8px;color:var(--t2)">Python</td><td style="padding:8px;font-family:'Fira Code',monospace;font-size:.7rem">GeoPandas</td><td style="padding:8px;font-family:'Fira Code',monospace;font-size:.7rem">Rasterio</td></tr></table><div class="co tip" style="margin-top:10px"><strong>Regla:</strong> Puedes dibujar el contorno → vector. Es una foto/superficie → ráster.</div>`;}}
+
+// Layers
+let ly=[1,1,1,1,1],li2=false;
+function il(){if(li2)return;li2=true;dl();}
+function tl(i){ly[i]=ly[i]?0:1;document.getElementById('lt'+i).classList.toggle('on',ly[i]);dl();}
+function dl(){const c2=document.getElementById('lC'),x=c2.getContext('2d'),w=c2.width,h=c2.height;x.fillStyle='#0d1117';x.fillRect(0,0,w,h);
+x.strokeStyle='rgba(255,255,255,.03)';x.lineWidth=1;for(let i=0;i<w;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke();}for(let i=0;i<h;i+=32){x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke();}
+if(ly[0]){[[55,70,180,160],[260,110,140,180],[90,270,220,130],[370,40,160,230],[320,300,180,120]].forEach(v=>{x.fillStyle='rgba(34,180,90,.16)';x.beginPath();x.ellipse(v[0]+v[2]/2,v[1]+v[3]/2,v[2]/2,v[3]/2,0,0,Math.PI*2);x.fill();x.strokeStyle='rgba(34,180,90,.25)';x.lineWidth=1;x.beginPath();x.ellipse(v[0]+v[2]/2,v[1]+v[3]/2,v[2]/2,v[3]/2,0,0,Math.PI*2);x.stroke();});}
+if(ly[4]){x.strokeStyle='rgba(180,90,180,.3)';x.lineWidth=2;x.setLineDash([7,4]);x.strokeRect(25,25,280,200);x.strokeRect(305,25,330,200);x.strokeRect(25,225,280,220);x.strokeRect(305,225,330,220);x.setLineDash([]);x.fillStyle='rgba(180,90,180,.18)';x.font='10px Fira Code';x.fillText('Mun. A',40,50);x.fillText('Mun. B',330,50);x.fillText('Mun. C',40,248);x.fillText('Mun. D',330,248);}
+if(ly[1]){x.strokeStyle='rgba(80,130,235,.45)';x.lineWidth=3;x.setLineDash([]);x.beginPath();x.moveTo(320,0);x.quadraticCurveTo(280,140,180,230);x.quadraticCurveTo(130,300,90,h);x.stroke();x.beginPath();x.moveTo(470,0);x.quadraticCurveTo(450,180,380,320);x.quadraticCurveTo(340,400,300,h);x.stroke();}
+if(ly[2]){x.strokeStyle='rgba(235,170,45,.4)';x.lineWidth=2;x.setLineDash([9,5]);x.beginPath();x.moveTo(0,185);x.lineTo(w,170);x.stroke();x.beginPath();x.moveTo(280,0);x.lineTo(300,h);x.stroke();x.setLineDash([]);}
+if(ly[3]){[[160,145],[390,185],[275,320],[490,90],[135,370]].forEach((p,i)=>{x.beginPath();x.arc(p[0],p[1],7,0,Math.PI*2);x.fillStyle='rgba(230,60,60,.55)';x.fill();x.beginPath();x.arc(p[0],p[1],12,0,Math.PI*2);x.strokeStyle='rgba(230,60,60,.2)';x.lineWidth=1;x.stroke();x.fillStyle='rgba(255,255,255,.3)';x.font='10px Outfit';x.fillText(['Ciudad A','Ciudad B','Ciudad C','Ciudad D','Ciudad E'][i],p[0]+13,p[1]+3);});}}
+
+setTimeout(()=>um(),80);
+</script>
+</body>
+</html>

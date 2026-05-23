@@ -1,8 +1,8 @@
 # Curso: Python + IA para Geoinformación
 
-> ## 🎯 [**▶ ABRIR PRESENTACIÓN DEL CURSO**](https://trabajocientifico.github.io/curso-python-IA-geoinformacion/)
+> ## 🎯 <a href="https://trabajocientifico.github.io/curso-python-IA-geoinformacion/" target="_blank" rel="noopener noreferrer"><strong>▶ Abrir presentación del curso</strong></a>
 >
-> ### 👉 https://trabajocientifico.github.io/curso-python-IA-geoinformacion/
+> <a href="https://trabajocientifico.github.io/curso-python-IA-geoinformacion/" target="_blank" rel="noopener noreferrer">👉 Ir a la presentación interactiva</a>
 
 ---
 
@@ -27,6 +27,6 @@ Material de clase del curso **Python + IA aplicado a la Geoinformación**: una i
 
 ## Cómo usar este material
 
-1. Revisa la [presentación en línea](https://trabajocientifico.github.io/curso-python-IA-geoinformacion/) para los conceptos.
+1. Revisa la <a href="https://trabajocientifico.github.io/curso-python-IA-geoinformacion/" target="_blank" rel="noopener noreferrer">presentación en línea</a> para los conceptos.
 2. Abre los notebooks (`.ipynb`) en [Google Colab](https://colab.research.google.com/) o Jupyter.
 3. Los datos de ejemplo están dentro de cada carpeta `datos/`.
